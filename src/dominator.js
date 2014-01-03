@@ -24,8 +24,18 @@ window.DOMinator = (function() {
   function getElements(selector) {
       if (! selector) return [];
 
-      if (isString(selector))
-          return getElements(document.querySelectorAll(selector));
+      if (isString(selector)) {
+        selector = selector.trim();
+        if (selector[0] === "<") {
+          // HTML was specified! Create the elements
+          var element = document.createElement('div');
+          element.innerHTML = selector;
+          return getElements(element.childNodes);
+        }
+
+        // Just a normal selector
+        return getElements(document.querySelectorAll(selector));
+      }
 
       // already an array, just return the array.
       if (isArray(selector))

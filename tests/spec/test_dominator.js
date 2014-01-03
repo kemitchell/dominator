@@ -39,6 +39,19 @@ describe('DOMinator', function() {
       });
     });
 
+    describe('constructor with HTML', function() {
+      var element;
+
+      beforeEach(function() {
+        element = DOMinator('<div>some <span>html contents</span></div>').nth(0);
+      });
+
+      it('creates the DOM elements', function() {
+        assert.isTrue(jQuery(element).is('div'), 'element created');
+        assert.equal('some <span>html contents</span>', jQuery(element).html(), 'element has contents set');
+      });
+    });
+
     describe('find', function() {
       var buttons;
 
@@ -285,22 +298,11 @@ describe('DOMinator', function() {
       });
     });
 
-    /*
-    it('testCreateElement', function() {
-        var contents = 'some <span>html contents</span>';
-        var element = DOMunchained.createElement('div', contents);
-
-        assert.isTrue(jQuery(element).is('div'), 'element created');
-        assert.equal(contents, jQuery(element).html(), 'element has contents set');
-    });
-    */
-
     describe('append', function() {
       beforeEach(function() {
         DOMinator('#addedField').remove();
 
-        var element = DOMinator(DOMunchained.createElement('div', 'added child'))
-                            .attr('id', 'addedField');
+        var element = DOMinator('<div>added child</div>').attr('id', 'addedField');
         DOMinator('body').append(element);
       });
 
@@ -312,8 +314,7 @@ describe('DOMinator', function() {
     describe('appendTo', function() {
       beforeEach(function() {
         DOMinator('.DOMSelection').empty();
-
-        DOMinator(DOMunchained.createElement('div', 'empty div')).appendTo('.DOMSelection');
+        DOMinator('<div>empty div</div>').appendTo('.DOMSelection');
       });
 
       it('append selection to selector given in appendTo', function() {
@@ -325,9 +326,8 @@ describe('DOMinator', function() {
       beforeEach(function() {
         DOMinator('.DOMSelection').empty();
 
-        var first = DOMunchained.createElement('div', 'first div');
-        DOMinator(first).appendTo('.DOMSelection');
-        DOMinator(DOMunchained.createElement('div', 'second div')).insertAfter(first);
+        var first = DOMinator('<div>first div</div>').appendTo('.DOMSelection');
+        DOMinator('<div>second div</div>').insertAfter(first);
       });
 
       it('inserts selection to selector given in insertAfter', function() {
@@ -339,9 +339,8 @@ describe('DOMinator', function() {
       beforeEach(function() {
         jQuery('.DOMSelection').empty();
 
-        var first = DOMunchained.createElement('div', 'first div');
-        DOMinator(first).appendTo('.DOMSelection');
-        DOMinator(DOMunchained.createElement('div', 'second div')).insertBefore(first);
+        var first = DOMinator('<div>first div</div>').appendTo('.DOMSelection');
+        DOMinator('<div>second div</div>').insertBefore(first);
       });
 
       it('inserts selection before selector given in insertBefore', function() {
@@ -351,8 +350,9 @@ describe('DOMinator', function() {
 
     describe('insertAsNthChild', function() {
       beforeEach(function() {
-        var second = DOMunchained.createElement('div', '2nd child');
-        DOMinator(second).addClass('second').insertAsNthChild('.DOMSelection', 1);
+        DOMinator('<div>2nd child</div>')
+              .attr('id', 'second')
+              .insertAsNthChild('.DOMSelection', 1);
       });
 
       it('inserts into the correct position', function() {
@@ -364,8 +364,9 @@ describe('DOMinator', function() {
       beforeEach(function() {
         DOMinator('#addedField').remove();
 
-        var element = DOMunchained.createElement('div', 'added child');
-        DOMinator(element).attr('id', 'addedField').appendTo('body').remove();
+        DOMinator('<div>added child</div>')
+                .attr('id', 'addedField')
+                .appendTo('body').remove();
       });
 
       it('removes the element from the DOM', function() {
