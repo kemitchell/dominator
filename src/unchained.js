@@ -4,20 +4,9 @@
 * @class window.DOMinator
 * @static
 */
-window.DOMinator = (function(undefined) {
-    function flatten(array) {
-      return array.reduce(function(prevValue, currValue) {
-        return prevValue.concat(currValue);
-      }, []);
-    }
-
-    function isString(itemToCheck) {
-      return '[object String]' === Object.prototype.toString.apply(itemToCheck);
-    }
-
-    function isArray(itemToCheck) {
-      return '[object Array]' === Object.prototype.toString.apply(itemToCheck);
-    }
+window.DOMunchained = (function(undefined) {
+    'use strict';
+    /*global DOMinator*/
 
     var DOM = {
         /**
@@ -27,20 +16,7 @@ window.DOMinator = (function(undefined) {
         * @return {array} array of elements
         */
         getElements: function(selector) {
-            if (! selector) return [];
-
-            if (isString(selector))
-                return DOM.getElements(document.querySelectorAll(selector));
-
-            // already an array, just return the array.
-            if (isArray(selector))
-                return selector;
-
-            // an array-like object, conver to an array.
-            if ('length' in selector)
-                return [].slice.call(selector, 0);
-
-            return [ selector ];
+            return DOMinator(selector);
         },
 
         /**
@@ -51,7 +27,7 @@ window.DOMinator = (function(undefined) {
         * @return {element} the nth element, if it exists.
         */
         getNthElement: function(selector, index) {
-            return DOM.getElements(selector)[ index ];
+            return DOMinator(selector).nth(index);
         },
 
         /**
@@ -62,9 +38,7 @@ window.DOMinator = (function(undefined) {
         * @return {array} array of elements
         */
         getDescendentElements: function(selector, root) {
-            return flatten(DOM.getElements(root).map(function(element) {
-                return DOM.getElements(element.querySelectorAll(selector));
-            }));
+            return DOMinator(root).find(selector);
         },
 
         /**
@@ -76,11 +50,7 @@ window.DOMinator = (function(undefined) {
         * @return {array} array of elements
         */
         getElementsIncludeRoot: function(selector, root) {
-            var els = DOM.getDescendentElements(selector, root);
-            if(DOM.is(root, selector)) {
-                els.unshift(root);
-            }
-            return flatten(els);
+          return DOMinator(root).findIncludeRoot(selector);
         },
 
         /**
@@ -90,9 +60,7 @@ window.DOMinator = (function(undefined) {
         * @return {array} an array of children
         */
         getChildren: function(selector) {
-            return flatten(DOM.getElements(selector).map(function(element) {
-                return DOM.getElements(element.childNodes);
-            }));
+            return DOMinator(selector).children();
         },
 
         /**
@@ -103,7 +71,7 @@ window.DOMinator = (function(undefined) {
         * @return {element} the nth child if it exists.
         */
         getNthChild: function(selector, index) {
-            return DOM.getChildren(selector)[ index ];
+            return DOMinator(selector).nthChild( index );
         },
 
         /**
@@ -114,12 +82,7 @@ window.DOMinator = (function(undefined) {
         * @return {array} The closest ancestor matching the selector
         */
         closest: function(selector, searchFrom) {
-          var target = DOM.getNthElement(searchFrom, 0);
-
-          while (target) {
-            if (DOM.is(target, selector)) return target;
-            target = target.parentNode;
-          }
+          return DOMinator(searchFrom).closest(selector);
         },
 
         /**
@@ -130,9 +93,7 @@ window.DOMinator = (function(undefined) {
         * @param {context} context - context to callback in
         */
         forEach: function(elements, callback, context) {
-            DOM.getElements(elements).forEach(function(element, index) {
-                callback.call(context, element, index);
-            });
+            return DOMinator(elements).forEach(callback, context);
         },
 
         /**
@@ -141,9 +102,7 @@ window.DOMinator = (function(undefined) {
         * @param {selector || element} selector - element to remove
         */
         removeElement: function(selector) {
-            DOM.forEach(selector, function(element) {
-                element.parentNode.removeChild(element);
-            });
+            return DOMinator(selector).remove();
         },
 
         /**
@@ -154,9 +113,7 @@ window.DOMinator = (function(undefined) {
         * @param {function} callback - callback to call
         */
         bindEvent: function(selector, eventName, callback) {
-            DOM.forEach(selector, function(element) {
-                element.addEventListener(eventName, callback, false);
-            });
+            return DOMinator(selector).bindEvent(eventName, callback);
         },
 
         /**
@@ -167,9 +124,7 @@ window.DOMinator = (function(undefined) {
         * @param {function} callback - callback
         */
         unbindEvent: function(selector, eventName, callback) {
-            DOM.forEach(selector, function(element) {
-                element.removeEventListener(eventName, callback, false);
-            });
+            return DOMinator(selector).unbindEvent(eventName, callback);
         },
 
         /**
@@ -179,11 +134,7 @@ window.DOMinator = (function(undefined) {
         * @param {string} type - event to fire
         */
         fireEvent: function(selector, type) {
-            DOM.forEach(selector, function(element) {
-                var event = document.createEvent('CustomEvent');
-                event.initCustomEvent(type, true, true, undefined);
-                element.dispatchEvent(event);
-            });
+            return DOMinator(selector).fireEvent(type);
         },
 
         /**
@@ -193,14 +144,7 @@ window.DOMinator = (function(undefined) {
         * @param {string} value - value to set
         */
         setInner: function(selector, value) {
-            DOM.forEach(selector, function(element) {
-                if(isValBased(element)) {
-                    element.value = value;
-                }
-                else {
-                    element.innerHTML = value;
-                }
-            });
+            return DOMinator(selector).inner(value);
         },
 
         /**
@@ -210,14 +154,7 @@ window.DOMinator = (function(undefined) {
         * @return {string} inner value of the element
         */
         getInner: function(selector) {
-            var target = DOM.getNthElement(selector, 0);
-            if (! target) return;
-
-            if(isValBased(target)) {
-                return target.value;
-            }
-
-            return target.innerHTML;
+            return DOMinator(selector).inner();
         },
 
         /**
@@ -228,9 +165,7 @@ window.DOMinator = (function(undefined) {
         * @param {string} value - value to set
         */
         setAttr: function(selector, attrName, value) {
-            DOM.forEach(selector, function(element) {
-                element.setAttribute(attrName, value);
-            });
+            return DOMinator(selector).attr(attrName, value);
         },
 
         /**
@@ -241,9 +176,7 @@ window.DOMinator = (function(undefined) {
         * @return {string} attribute's value
         */
         getAttr: function(selector, attrName) {
-            var element = DOM.getNthElement(selector, 0);
-            if (! element) return;
-            return element.getAttribute(attrName);
+            return DOMinator(selector).attr(attrName);
         },
 
         /**
@@ -254,9 +187,7 @@ window.DOMinator = (function(undefined) {
         * @return {boolean} true if the element has the attribute, false otw.
         */
         hasAttr: function(selector, attrName) {
-            var element = DOM.getNthElement(selector, 0);
-            if (! element) return false;
-            return !! element.hasAttribute(attrName);
+            return DOMinator(selector).hasAttr(attrName);
         },
 
         /**
@@ -266,9 +197,7 @@ window.DOMinator = (function(undefined) {
         * @param {string} attrName - the attribute to remove
         */
         removeAttr: function(selector, attrName) {
-            DOM.forEach(selector, function(element) {
-              element.removeAttribute(attrName);
-            });
+            return DOMinator(selector).removeAttr(attrName);
         },
 
         /**
@@ -278,9 +207,7 @@ window.DOMinator = (function(undefined) {
         * @param {string} className
         */
         addClass: function(selector, className) {
-            DOM.forEach(selector, function(element) {
-                element.classList.add(className);
-            });
+            return DOMinator(selector).addClass(className);
         },
 
         /**
@@ -290,9 +217,7 @@ window.DOMinator = (function(undefined) {
         * @param {string} className
         */
         removeClass: function(selector, className) {
-            DOM.forEach(selector, function(element) {
-                element.classList.remove(className);
-            });
+            return DOMinator(selector).removeClass(className);
         },
 
         /**
@@ -303,9 +228,7 @@ window.DOMinator = (function(undefined) {
         * @return {boolean} true if element has class, false otw.
         */
         hasClass: function(selector, className) {
-            var element = DOM.getNthElement(selector, 0);
-            if (! element) return false;
-            return element.classList.contains(className);
+            return DOMinator(selector).hasClass(className);
         },
 
         /**
@@ -318,7 +241,7 @@ window.DOMinator = (function(undefined) {
         createElement: function(type, html) {
             var element = document.createElement(type);
             if(html) {
-                DOM.setInner(element, html);
+                DOMinator(element).inner(html);
             }
             return element;
         },
@@ -330,12 +253,7 @@ window.DOMinator = (function(undefined) {
         * @param {selector || element} elementToAppendTo
         */
         appendTo: function(elementToInsert, elementToAppendTo) {
-            var parentNode = DOM.getNthElement(elementToAppendTo, 0);
-            if (! parentNode) return;
-
-            DOM.forEach(elementToInsert, function(element) {
-                parentNode.appendChild(element);
-            });
+            return DOMinator(elementToInsert).appendTo(elementToAppendTo);
         },
 
         /**
@@ -345,15 +263,7 @@ window.DOMinator = (function(undefined) {
         * @param {selector || element} elementToInsertBefore
         */
         insertAfter: function(elementToInsert, elementToInsertAfter) {
-            var insertAfter = DOM.getNthElement(elementToInsertAfter, 0);
-            if (! insertAfter) return;
-
-            var insertBefore = insertAfter.nextChild || null;
-            var parentNode = insertAfter.parentNode;
-
-            DOM.forEach(elementToInsert, function(element) {
-                parentNode.insertBefore(element, insertBefore);
-            });
+            return DOMinator(elementToInsert).insertAfter(elementToInsertAfter);
         },
 
         /**
@@ -363,14 +273,7 @@ window.DOMinator = (function(undefined) {
         * @param {selector || element} elementToInsertBefore
         */
         insertBefore: function(elementToInsert, elementToInsertBefore) {
-            var insertBefore = DOM.getNthElement(elementToInsertBefore, 0);
-            if (! insertBefore) return;
-
-            var parentNode = insertBefore.parentNode;
-
-            DOM.forEach(elementToInsert, function(element) {
-                parentNode.insertBefore(element, insertBefore);
-            });
+            return DOMinator(elementToInsert).insertBefore(elementToInsertBefore);
         },
 
         /**
@@ -381,12 +284,7 @@ window.DOMinator = (function(undefined) {
         * @param {number} index
         */
         insertAsNthChild: function(elementToInsert, parent, index) {
-            var nthChild = DOM.getNthChild(parent, index);
-            if (! nthChild) return;
-
-            DOM.forEach(elementToInsert, function(element) {
-                nthChild.parentElement.insertBefore(element, nthChild);
-            });
+            return DOMinator(elementToInsert).insertAsNthChild(parent, index);
         },
 
         /**
@@ -395,9 +293,7 @@ window.DOMinator = (function(undefined) {
          * @param {selelector || element} elementToFocus
          */
         focus: function(elementToFocus) {
-          var target = DOM.getNthElement(parent, 0);
-          if (! target) return;
-          target.focus();
+          return DOMinator(elementToFocus).focus();
         },
 
         /**
@@ -411,12 +307,7 @@ window.DOMinator = (function(undefined) {
          * type, false otw.
          */
         is: function(elementToCheck, type) {
-          var haystack = DOM.getElements(type);
-
-          var needle = DOM.getNthElement(elementToCheck, 0);
-          if (! needle) return false;
-
-          return haystack.indexOf(needle) > -1;
+          return DOMinator(elementToCheck).is(type);
         },
 
         /**
@@ -425,9 +316,7 @@ window.DOMinator = (function(undefined) {
          * @param {selector || element} elementToShow
          */
         show: function(selector) {
-          DOM.forEach(selector, function(element) {
-            element.style.display = "block";
-          });
+          return DOMinator(selector).show();
         },
 
         /**
@@ -436,9 +325,7 @@ window.DOMinator = (function(undefined) {
          * @param {selector || element} elementToHide
          */
         hide: function(selector) {
-          DOM.forEach(selector, function(element) {
-            element.style.display = "none";
-          });
+          return DOMinator(selector).hide();
         }
     };
 
