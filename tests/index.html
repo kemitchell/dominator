@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="lib/mocha/mocha.css">
+
+	<script src="lib/jquery/jquery-1.10.2.js"></script>
+	<script src="lib/mocha/mocha.js"></script>
+	<script src="lib/chai/chai.js"></script>
+
+  <script>
+    window.mocha.setup('bdd');
+  </script>
+
+
+
+	<script src="../src/native.js"></script>
+	<script src="spec/test_native.js"></script>
+
+  <title>DOMinator Unit Tests</title>
+
+</head>
+<body>
+
+  <div id="mocha"></div>
+
+  <div id="fixture">
+      <div id="AFrame_List">
+          <h3>AFrame.List test</h3>
+
+          <ul class="list">
+          </ul>
+
+      </div>
+
+      <textarea id="textAreaField" data-field name="name" required></textarea>
+
+      <input type="text" id="validationField" />
+
+      <div class="DOMSelection"></div>
+
+      <div id="hiddenElement" style="display: none; height: 50px;">
+        A hidden element
+      </div>
+  </div>
+  <div id="testSetInnerNonInput"></div>
+
+  <script>
+    window.addEventListener('load', function() {
+      if (navigator.userAgent.indexOf('PhantomJS') < 0) {
+        mocha.run();
+      }
+    }, false);
+  </script>
+
+</body>
+</html>
