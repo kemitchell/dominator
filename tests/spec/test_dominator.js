@@ -417,4 +417,24 @@ describe('DOMinator', function() {
         assert.isFalse(jQuery('#hiddenElement').is(':visible'));
       });
     });
+
+    describe('style to set style', function() {
+      beforeEach(function() {
+        DOMinator('body').style('position', 'absolute');
+      });
+
+      afterEach(function() {
+        DOMinator('body').style('position', 'static');
+      });
+
+      it('sets the style of an element', function() {
+        assert.equal(jQuery('body')[0].style.position, 'absolute');
+      });
+    });
+
+    describe('toArray', function() {
+      it('converts the DOMinator object to an array', function() {
+        assert.isArray(DOMinator('body').toArray());
+      });
+    });
 });
