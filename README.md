@@ -20,8 +20,6 @@ Specific needs:
 * Documentation
 * Cross browser testing
 * IE8/IE9 support
-* AMD/UMD support
-* Grunt build steps
 * Bower package
 
 ## License:
