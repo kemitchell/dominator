@@ -2,13 +2,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/**
+ * @class DOMinator
+ * @author Shane Tomlinson shane@shanetomlinson.com
+ * @version 0.0.2
+ */
+
   'use strict';
 
   /*global document*/
 
   var DOMinator = {
     /**
-     * Fill the DOMinator object with the selector
+     * Fill the DOMinator object with elements matched by the the selector.
+     *
+     * @method fill
+     * @param {String} selector Selector to match
+     * @return {Collection} DOMinator collection
      */
     fill: function(selector) {
       var els = getElements(selector);
@@ -22,14 +32,21 @@
     },
 
     /**
-     * Get the nth object in the set
+     * Get the nth object in the set.
+     *
+     * @method nth
+     * @param {Number} index Item index
+     * @return {Element} element, if it exists in the set
      */
     nth: function(index) {
       return this[index];
     },
 
     /**
-     * Get all the children of all the elements in the set
+     * Get all the children of all the elements in the set.
+     *
+     * @method children
+     * @return {Collection} DOMinator collection
      */
     children: function() {
       return toDOMinator(flatten(this.toArray().map(function(element) {
@@ -38,14 +55,22 @@
     },
 
     /**
-     * Get the nth child of all the children of all the elements in the set
+     * Get the nth child of all the children of all the elements in the set.
+     *
+     * @method nthChild
+     * @param {Number} index Item index
+     * @return {Element} element, if it exists in the set
      */
     nthChild: function(index) {
       return this.children()[index];
     },
 
     /**
-     * Find descendent elements
+     * Find descendent elements.
+     *
+     * @method find
+     * @param {String} selector Selector to match
+     * @return {Collection} DOMinator collection
      */
     find: function(selector) {
       return toDOMinator(flatten(this.toArray().map(function(element) {
@@ -54,7 +79,12 @@
     },
 
     /**
-     * Find descendent elements and include the root if it matches the selector
+     * Find descendent elements and include the root if it.
+     * matches the selector.
+     *
+     * @method findIncludeRoot
+     * @param {String} selector Selector to match
+     * @return {Collection} DOMinator collection
      */
     findIncludeRoot: function(selector) {
       var els = [].slice.call(this.find(selector), 0);
@@ -70,7 +100,11 @@
     },
 
     /**
-     * Check if the first element of the set matches the type
+     * Check if the first element of the set matches the selector.
+     *
+     * @method is
+     * @param {String} selector Selector to match
+     * @return {Boolean} true if element matches the selector, false otw.
      */
     is: function(type) {
       if (isEmpty(this)) return false;
@@ -81,7 +115,11 @@
 
     /**
      * Find the closest ancestor of the first element of the set
-     * that matches the selector
+     * that matches the selector.
+     *
+     * @method closest
+     * @param {String} selector Selector to match
+     * @return {Element}
      */
     closest: function(selector) {
       var target = this[0];
@@ -94,7 +132,9 @@
     },
 
     /**
-     * Remove the set of elements from the DOM
+     * Remove the set of elements from the DOM.
+     *
+     * @method remove
      */
     remove: function() {
       return this.forEach(function(element) {
@@ -103,7 +143,13 @@
     },
 
     /**
-     * Add a DOM event handler to the set of elements
+     * Add a DOM event handler to the set of elements.
+     *
+     * @method bindEvent
+     * @param {String} eventName DOM event name
+     * @param {Function} callback Callback to call
+     * @param {Boolean} bubble Handle during bubble phase
+     * @return {Collection} DOMinator collection
      */
     bindEvent: function(eventName, callback, bubble) {
       return this.forEach(function(element) {
@@ -112,7 +158,13 @@
     },
 
     /**
-     * Remove a DOM event handler from the set of elements
+     * Remove a DOM event handler from the set of elements.
+     *
+     * @method unbindEvent
+     * @param {String} eventName DOM event name
+     * @param {Function} callback Callback to call
+     * @param {Boolean} bubble Handle during bubble phase
+     * @return {Collection} DOMinator collection
      */
     unbindEvent: function(eventName, callback, bubble) {
       return this.forEach(function(element) {
@@ -121,7 +173,11 @@
     },
 
     /**
-     * Fire a synthetic event on the set of elements
+     * Fire a synthetic event on the set of elements.
+     *
+     * @method fireEvent
+     * @param {String} type Type of event to fire
+     * @return {Collection} DOMinator collection
      */
     fireEvent: function(type) {
       return this.forEach(function(element) {
@@ -133,6 +189,10 @@
 
     /**
      * Get/Set the innerHTML or value of an element.
+     *
+     * @method inner
+     * @param {String} value innerHTML or value
+     * @return {Collection} DOMinator collection
      */
     inner: function(value) {
       if (arguments.length === 0) {
@@ -157,7 +217,10 @@
     },
 
     /**
-     * Remove all children from the set of elements
+     * Remove all children from the set of elements.
+     *
+     * @method empty
+     * @return {Collection} DOMinator collection
      */
     empty: function() {
       return this.forEach(function(element) {
@@ -166,7 +229,11 @@
     },
 
     /**
-     * Get/Set an attribute on the set of elements
+     * Get/Set an attribute on the set of elements.
+     *
+     * @method attr
+     * @param {String} attrName Attribute name
+     * @param {String} value (optional) attribute value
      */
     attr: function(attrName, value) {
       if (arguments.length === 1) {
@@ -181,7 +248,11 @@
     },
 
     /**
-     * Check if the first element in the set has an attribute
+     * Check if the first element in the set has an attribute.
+     *
+     * @method hasAttr
+     * @param {String} attrName Attribute name
+     * @return {Boolean} true if first element in set has the attribute.
      */
     hasAttr: function(attrName) {
       if (isEmpty(this)) return false;
@@ -189,7 +260,11 @@
     },
 
     /**
-     * Remove the attribute from all elements in the set
+     * Remove the attribute from all elements in the set.
+     *
+     * @method removeAttr
+     * @param {String} attrName Attribute name
+     * @return {Collection} DOMinator collection
      */
     removeAttr: function(attrName) {
       return this.forEach(function(element) {
@@ -198,7 +273,11 @@
     },
 
     /**
-     * Add a class to all elements in the set
+     * Add a class to all elements in the set.
+     *
+     * @method addClass
+     * @param {String} className Class name
+     * @return {Collection} DOMinator collection
      */
     addClass: function(className) {
       return this.forEach(function(element) {
@@ -207,7 +286,11 @@
     },
 
     /**
-     * Remove a class from all elements in the set
+     * Remove a class from all elements in the set.
+     *
+     * @method removeClass
+     * @param {String} className Class name
+     * @return {Collection} DOMinator collection
      */
     removeClass: function(className) {
       return this.forEach(function(element) {
@@ -216,7 +299,11 @@
     },
 
     /**
-     * Check if the first element in the set has a class name
+     * Check if the first element in the set has a class name.
+     *
+     * @method hasClass
+     * @param {String} className Class name
+     * @return {Boolean} true if first element has the class name, false otw.
      */
     hasClass: function(className) {
       if (isEmpty(this)) return false;
@@ -224,7 +311,12 @@
     },
 
     /**
-     * Iterate over the elements
+     * Iterate over the elements.
+     *
+     * @method forEach
+     * @param {Function} iterator Iterator function
+     * @param {Object} context Context to use when calling `iterator`
+     * @return {Collection} DOMinator collection
      */
     forEach: function(callback, context) {
       [].forEach.call(this, callback, context);
@@ -233,13 +325,22 @@
 
     /**
      * Run map over the set of elements.
+     *
+     * @method map
+     * @param {Function} iterator Iterator function
+     * @param {Object} context Context to use when calling `iterator`
+     * @return {Array} map results
      */
     map: function(callback, context) {
       return [].map.call(this, callback, context);
     },
 
     /**
-     * Append an element to all elements in the set
+     * Append an element to all elements in the set.
+     *
+     * @method append
+     * @param {String} elementToAppend HTML or element to append
+     * @return {Collection} DOMinator collection
      */
     append: function(elementToAppend) {
       return this.forEach(function(parent) {
@@ -250,7 +351,11 @@
     },
 
     /**
-     * Append the current set of elements to another element
+     * Append the current set of elements to another element.
+     *
+     * @method appendTo
+     * @param {String} elementToAppendTo Element to append to
+     * @return {Collection} DOMinator collection
      */
     appendTo: function(elementToAppendTo) {
       var parentNode = toDOMinator(elementToAppendTo)[0];
@@ -262,7 +367,11 @@
     },
 
     /**
-     * Insert the current set of elements after another element
+     * Insert the current set of elements after another element.
+     *
+     * @method insertAfter
+     * @param {String} elementToInsertAfter Element to insert after
+     * @return {Collection} DOMinator collection
      */
     insertAfter: function(elementToInsertAfter) {
       var insertAfter = toDOMinator(elementToInsertAfter)[0];
@@ -277,7 +386,11 @@
     },
 
     /**
-     * Insert the current set of elements before another element
+     * Insert the current set of elements before another element.
+     *
+     * @method insertBefore
+     * @param {String} elementToInsertBefore Element to insert before
+     * @return {Collection} DOMinator collection
      */
     insertBefore: function(elementToInsertBefore) {
       var insertBefore = toDOMinator(elementToInsertBefore)[0];
@@ -291,7 +404,12 @@
     },
 
     /**
-     * Insert the current set of elements as the Nth child of another element
+     * Insert the current set of elements as the Nth child of another element.
+     *
+     * @method insertAsNthChild
+     * @param {String} parent Parent element
+     * @param {Number} index Index where to insert
+     * @return {Collection} DOMinator collection
      */
     insertAsNthChild: function(parent, index) {
       var nthChild = toDOMinator(parent).nthChild(index);
@@ -303,7 +421,10 @@
     },
 
     /**
-     * Focus the first element in the set
+     * Focus the first element in the set.
+     *
+     * @method focus
+     * @return {Collection} DOMinator collection
      */
     focus: function() {
       if (isEmpty(this)) return;
@@ -313,21 +434,32 @@
     },
 
     /**
-     * Show all elements in the set by setting 'display: block'
+     * Show all elements in the set by setting 'display: block'.
+     *
+     * @method show
+     * @return {Collection} DOMinator collection
      */
     show: function() {
       return this.style('display', 'block');
     },
 
     /**
-     * Hide all elements in the set by setting 'display: none'
+     * Hide all elements in the set by setting 'display: none'.
+     *
+     * @method hide
+     * @return {Collection} DOMinator collection
      */
     hide: function() {
       return this.style('display', 'none');
     },
 
     /**
-     * Set a style on all elements in the set
+     * Set a style on all elements in the set.
+     *
+     * @method style
+     * @param {String} name Style name
+     * @param {String} value Style value
+     * @return {Collection} DOMinator collection
      */
     style: function(name, value) {
       return this.forEach(function(element) {
@@ -336,7 +468,10 @@
     },
 
     /**
-     * Convert the set to an Array
+     * Convert the set to an Array.
+     *
+     * @method toArray
+     * @return {Array}
      */
     toArray: function() {
       return [].slice.call(this, 0);

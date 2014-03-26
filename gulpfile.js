@@ -6,9 +6,11 @@ const fs = require('fs');
 const path = require('path');
 const gulp = require('gulp');
 const replace = require('gulp-replace');
+const markdox = require('gulp-markdox');
 
 const paths = {
   script: './src/dominator.js',
+  documentation_root: './docs',
   templates: ['./templates/*.js'],
   build: './build'
 };
@@ -21,3 +23,9 @@ gulp.task('default', function () {
       .pipe(gulp.dest(paths.build));
 });
 
+
+gulp.task('docs', function () {
+  gulp.src(paths.script)
+    .pipe(markdox())
+    .pipe(gulp.dest(paths.documentation_root));
+});

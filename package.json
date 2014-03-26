@@ -1,8 +1,8 @@
 {
   "name": "dominator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "DOMinator is a jQuery-like DOM micro library.",
-  "main": "index.js",
+  "main": "build/umd.js",
   "directories": {
     "test": "tests"
   },
@@ -22,8 +22,8 @@
   },
   "homepage": "https://github.com/shane-tomlinson/dominator",
   "devDependencies": {
-    "gulp": "3.5.5",
-    "gulp-replace": "~0.2.0"
-  },
-  "main": "build/umd.js"
+    "gulp": "3.5.6",
+    "gulp-replace": "0.2.0",
+    "gulp-markdox": "0.1.0"
+  }
 }
