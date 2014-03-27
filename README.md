@@ -2,6 +2,16 @@
 
 DOMinator is a jQuery-like DOM micro library. DOMinator is not meant to be fully compatible with jQuery, but to only provide a commonly used subset of functionality. DOMinator only works in modern browsers, including IE10+. DOMinator's lack of features has one significant benefit - its tiny size. Compare DOMinator's 1.3kb gzipped footprint to jQuery's 30+kb.
 
+## Usage
+
+DOMinator is requires document.querySelectorAll, its primary purpose is
+within a browwser. Choose one of the three pre-built packages in the `build` directory:
+
+* amd.js - For use with AMD loaders like requirejs.
+* umd.js - For use with UMD loaders like browserify.
+* standalone.js - A standalone package, DOMinator is available under the window.DOMinator namespace.
+
+
 ## Documentation:
 See the [API docs](https://github.com/shane-tomlinson/dominator/blob/master/docs/dominator.md).
 
