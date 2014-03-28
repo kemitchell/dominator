@@ -1,0 +1,30 @@
+{
+  "name": "dominator",
+  "version": "0.0.2",
+  "homepage": "https://github.com/shane-tomlinson/dominator",
+  "authors": [
+    "Shane Tomlinson <shane@shanetomlinson.com>"
+  ],
+  "description": "DOMinator is a jQuery-like DOM micro library.",
+  "main": ["build/amd.js","build/umd.js","build/standalone.js"],
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "DOM",
+    "jQuery",
+    "mircolibrary",
+    "DOM",
+    "manipulation"
+  ],
+  "license": "MPL 2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
