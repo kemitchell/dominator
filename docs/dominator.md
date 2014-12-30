@@ -1,16 +1,16 @@
 
 
-<!-- Start /Users/stomlinson/development/dominator/src/dominator.js -->
+<!-- Start src/dominator.js -->
+
+## DOMinator
 
 Author: Shane Tomlinson shane@shanetomlinson.com
 
-Version: 0.0.2
-
-License: This Source Code Form is subject to the terms of the Mozilla Public
-License, v. 2.0. If a copy of the MPL was not distributed with this
-file, You can obtain one at http://mozilla.org/MPL/2.0/.
+Version: 0.0.3
 
 ## DOMinator
+
+global document
 
 ## fill(selector)
 
@@ -110,7 +110,7 @@ that matches the selector.
 
 Remove the set of elements from the DOM.
 
-## bindEvent(eventName, callback, bubble)
+## on(eventName, callback, bubble)
 
 Add a DOM event handler to the set of elements.
 
@@ -124,7 +124,21 @@ Add a DOM event handler to the set of elements.
 
 * **Collection** DOMinator collection
 
-## unbindEvent(eventName, callback, bubble)
+## once(eventName, callback, bubble)
+
+Add a DOM event handler that is run once.
+
+### Params:
+
+* **String** *eventName* DOM event name
+* **Function** *callback* Callback to call
+* **Boolean** *bubble* Handle during bubble phase
+
+### Return:
+
+* **Collection** DOMinator collection
+
+## off(eventName, callback, bubble)
 
 Remove a DOM event handler from the set of elements.
 
@@ -138,7 +152,7 @@ Remove a DOM event handler from the set of elements.
 
 * **Collection** DOMinator collection
 
-## fireEvent(type)
+## trigger(type)
 
 Fire a synthetic event on the set of elements.
 
@@ -150,13 +164,25 @@ Fire a synthetic event on the set of elements.
 
 * **Collection** DOMinator collection
 
-## inner(value)
+## html(value)
 
 Get/Set the innerHTML or value of an element.
 
 ### Params:
 
 * **String** *value* innerHTML or value
+
+### Return:
+
+* **Collection** DOMinator collection
+
+## val(value)
+
+Get/Set the value of an input/textarea
+
+### Params:
+
+* **String** *value*
 
 ### Return:
 
@@ -371,5 +397,5 @@ Convert the set to an Array.
 
 * **Array**
 
-<!-- End /Users/stomlinson/development/dominator/src/dominator.js -->
+<!-- End src/dominator.js -->
 
