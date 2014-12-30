@@ -20,10 +20,10 @@
      * @param {String} selector Selector to match
      * @return {Collection} DOMinator collection
      */
-    fill: function(selector) {
+    fill: function (selector) {
       var els = getElements(selector);
 
-      els.forEach(function(item, index) {
+      els.forEach(function (item, index) {
         this[index] = item;
       }, this);
       this.length = els.length;
@@ -38,7 +38,7 @@
      * @param {Number} index Item index
      * @return {Element} element, if it exists in the set
      */
-    nth: function(index) {
+    nth: function (index) {
       return this[index];
     },
 
@@ -48,8 +48,8 @@
      * @method children
      * @return {Collection} DOMinator collection
      */
-    children: function() {
-      return toDOMinator(flatten(this.toArray().map(function(element) {
+    children: function () {
+      return toDOMinator(flatten(this.toArray().map(function (element) {
         return element.childNodes;
       })));
     },
@@ -61,7 +61,7 @@
      * @param {Number} index Item index
      * @return {Element} element, if it exists in the set
      */
-    nthChild: function(index) {
+    nthChild: function (index) {
       return this.children()[index];
     },
 
@@ -72,8 +72,8 @@
      * @param {String} selector Selector to match
      * @return {Collection} DOMinator collection
      */
-    find: function(selector) {
-      return toDOMinator(flatten(this.toArray().map(function(element) {
+    find: function (selector) {
+      return toDOMinator(flatten(this.toArray().map(function (element) {
         return element.querySelectorAll(selector);
       })));
     },
@@ -86,10 +86,10 @@
      * @param {String} selector Selector to match
      * @return {Collection} DOMinator collection
      */
-    findIncludeRoot: function(selector) {
+    findIncludeRoot: function (selector) {
       var els = [].slice.call(this.find(selector), 0);
 
-      this.forEach(function(element) {
+      this.forEach(function (element) {
         if (toDOMinator(element).is(selector)) {
           // TODO, this is going to put elements on the front in reverse order.
           els.unshift(element);
@@ -106,7 +106,7 @@
      * @param {String} selector Selector to match
      * @return {Boolean} true if element matches the selector, false otw.
      */
-    is: function(type) {
+    is: function (type) {
       if (isEmpty(this)) return false;
 
       var haystack = toDOMinator(type).toArray();
@@ -121,7 +121,7 @@
      * @param {String} selector Selector to match
      * @return {Element}
      */
-    closest: function(selector) {
+    closest: function (selector) {
       var target = this[0];
 
       while (target) {
@@ -136,8 +136,8 @@
      *
      * @method remove
      */
-    remove: function() {
-      return this.forEach(function(element) {
+    remove: function () {
+      return this.forEach(function (element) {
         element.parentNode.removeChild(element);
       });
     },
@@ -145,29 +145,48 @@
     /**
      * Add a DOM event handler to the set of elements.
      *
-     * @method bindEvent
+     * @method on
      * @param {String} eventName DOM event name
      * @param {Function} callback Callback to call
      * @param {Boolean} bubble Handle during bubble phase
      * @return {Collection} DOMinator collection
      */
-    bindEvent: function(eventName, callback, bubble) {
-      return this.forEach(function(element) {
+    on: function (eventName, callback, bubble) {
+      return this.forEach(function (element) {
         element.addEventListener(eventName, callback, bubble);
+      });
+    },
+
+
+    /**
+     * Add a DOM event handler that is run once.
+     *
+     * @method once
+     * @param {String} eventName DOM event name
+     * @param {Function} callback Callback to call
+     * @param {Boolean} bubble Handle during bubble phase
+     * @return {Collection} DOMinator collection
+     */
+    once: function (eventName, callback, bubble) {
+      return this.forEach(function (element) {
+        element.addEventListener(eventName, function handler(event) {
+          element.removeEventListener(eventName, handler, bubble);
+          callback(event);
+        }, bubble);
       });
     },
 
     /**
      * Remove a DOM event handler from the set of elements.
      *
-     * @method unbindEvent
+     * @method off
      * @param {String} eventName DOM event name
      * @param {Function} callback Callback to call
      * @param {Boolean} bubble Handle during bubble phase
      * @return {Collection} DOMinator collection
      */
-    unbindEvent: function(eventName, callback, bubble) {
-      return this.forEach(function(element) {
+    off: function (eventName, callback, bubble) {
+      return this.forEach(function (element) {
         element.removeEventListener(eventName, callback, bubble);
       });
     },
@@ -175,12 +194,12 @@
     /**
      * Fire a synthetic event on the set of elements.
      *
-     * @method fireEvent
+     * @method trigger
      * @param {String} type Type of event to fire
      * @return {Collection} DOMinator collection
      */
-    fireEvent: function(type) {
-      return this.forEach(function(element) {
+    trigger: function (type) {
+      return this.forEach(function (element) {
         var event = document.createEvent('CustomEvent');
         event.initCustomEvent(type, true, true, undefined);
         element.dispatchEvent(event);
@@ -190,29 +209,48 @@
     /**
      * Get/Set the innerHTML or value of an element.
      *
-     * @method inner
+     * @method html
      * @param {String} value innerHTML or value
      * @return {Collection} DOMinator collection
      */
-    inner: function(value) {
+    html: function (value) {
       if (arguments.length === 0) {
         var target = this[0];
         if (! target) return;
 
-        if(isValBased(target)) {
-            return target.value;
-        }
-
         return target.innerHTML;
       }
 
-      return this.forEach(function(element) {
-        if(isValBased(element)) {
-          element.value = value;
+      return this.forEach(function (element) {
+        element.innerHTML = value;
+      });
+    },
+
+    /**
+     * Get/Set the value of an input/textarea
+     *
+     * @method val
+     * @param {String} value
+     * @return {Collection} DOMinator collection
+     */
+    val: function (value) {
+      if (arguments.length === 0) {
+        var target = this[0];
+        if (! target) return;
+
+        if(! isValBased(target)) {
+          throw new Error('cannot get the value of a non-value based element');
         }
-        else {
-          element.innerHTML = value;
+
+        return target.value;
+      }
+
+      return this.forEach(function (element) {
+        if(! isValBased(element)) {
+          throw new Error('cannot set the value of a non-value based element');
         }
+
+        element.value = value;
       });
     },
 
@@ -222,9 +260,9 @@
      * @method empty
      * @return {Collection} DOMinator collection
      */
-    empty: function() {
-      return this.forEach(function(element) {
-        toDOMinator(element).inner('');
+    empty: function () {
+      return this.forEach(function (element) {
+        toDOMinator(element).html('');
       });
     },
 
@@ -235,14 +273,14 @@
      * @param {String} attrName Attribute name
      * @param {String} value (optional) attribute value
      */
-    attr: function(attrName, value) {
+    attr: function (attrName, value) {
       if (arguments.length === 1) {
         var element = this[0];
         if (! element) return;
         return element.getAttribute(attrName);
       }
 
-      return this.forEach(function(element) {
+      return this.forEach(function (element) {
         element.setAttribute(attrName, value);
       });
     },
@@ -254,7 +292,7 @@
      * @param {String} attrName Attribute name
      * @return {Boolean} true if first element in set has the attribute.
      */
-    hasAttr: function(attrName) {
+    hasAttr: function (attrName) {
       if (isEmpty(this)) return false;
       return !! this[0].hasAttribute(attrName);
     },
@@ -266,8 +304,8 @@
      * @param {String} attrName Attribute name
      * @return {Collection} DOMinator collection
      */
-    removeAttr: function(attrName) {
-      return this.forEach(function(element) {
+    removeAttr: function (attrName) {
+      return this.forEach(function (element) {
         element.removeAttribute(attrName);
       });
     },
@@ -279,8 +317,8 @@
      * @param {String} className Class name
      * @return {Collection} DOMinator collection
      */
-    addClass: function(className) {
-      return this.forEach(function(element) {
+    addClass: function (className) {
+      return this.forEach(function (element) {
         element.classList.add(className);
       });
     },
@@ -292,8 +330,8 @@
      * @param {String} className Class name
      * @return {Collection} DOMinator collection
      */
-    removeClass: function(className) {
-      return this.forEach(function(element) {
+    removeClass: function (className) {
+      return this.forEach(function (element) {
         element.classList.remove(className);
       });
     },
@@ -305,7 +343,7 @@
      * @param {String} className Class name
      * @return {Boolean} true if first element has the class name, false otw.
      */
-    hasClass: function(className) {
+    hasClass: function (className) {
       if (isEmpty(this)) return false;
       return this[0].classList.contains(className);
     },
@@ -318,7 +356,7 @@
      * @param {Object} context Context to use when calling `iterator`
      * @return {Collection} DOMinator collection
      */
-    forEach: function(callback, context) {
+    forEach: function (callback, context) {
       [].forEach.call(this, callback, context);
       return this;
     },
@@ -331,7 +369,7 @@
      * @param {Object} context Context to use when calling `iterator`
      * @return {Array} map results
      */
-    map: function(callback, context) {
+    map: function (callback, context) {
       return [].map.call(this, callback, context);
     },
 
@@ -342,9 +380,9 @@
      * @param {String} elementToAppend HTML or element to append
      * @return {Collection} DOMinator collection
      */
-    append: function(elementToAppend) {
-      return this.forEach(function(parent) {
-        toDOMinator(elementToAppend).forEach(function(element) {
+    append: function (elementToAppend) {
+      return this.forEach(function (parent) {
+        toDOMinator(elementToAppend).forEach(function (element) {
           parent.appendChild(element);
         });
       });
@@ -357,11 +395,11 @@
      * @param {String} elementToAppendTo Element to append to
      * @return {Collection} DOMinator collection
      */
-    appendTo: function(elementToAppendTo) {
+    appendTo: function (elementToAppendTo) {
       var parentNode = toDOMinator(elementToAppendTo)[0];
       if (! parentNode) return;
 
-      return this.forEach(function(element) {
+      return this.forEach(function (element) {
         parentNode.appendChild(element);
       });
     },
@@ -373,14 +411,14 @@
      * @param {String} elementToInsertAfter Element to insert after
      * @return {Collection} DOMinator collection
      */
-    insertAfter: function(elementToInsertAfter) {
+    insertAfter: function (elementToInsertAfter) {
       var insertAfter = toDOMinator(elementToInsertAfter)[0];
       if (! insertAfter) return;
 
       var insertBefore = insertAfter.nextChild || null;
       var parentNode = insertAfter.parentNode;
 
-      return this.forEach(function(element) {
+      return this.forEach(function (element) {
         parentNode.insertBefore(element, insertBefore);
       });
     },
@@ -392,13 +430,13 @@
      * @param {String} elementToInsertBefore Element to insert before
      * @return {Collection} DOMinator collection
      */
-    insertBefore: function(elementToInsertBefore) {
+    insertBefore: function (elementToInsertBefore) {
       var insertBefore = toDOMinator(elementToInsertBefore)[0];
       if (! insertBefore) return;
 
       var parentNode = insertBefore.parentNode;
 
-      return this.forEach(function(element) {
+      return this.forEach(function (element) {
         parentNode.insertBefore(element, insertBefore);
       });
     },
@@ -411,11 +449,11 @@
      * @param {Number} index Index where to insert
      * @return {Collection} DOMinator collection
      */
-    insertAsNthChild: function(parent, index) {
+    insertAsNthChild: function (parent, index) {
       var nthChild = toDOMinator(parent).nthChild(index);
       if (! nthChild) return;
 
-      return this.forEach(function(element) {
+      return this.forEach(function (element) {
         nthChild.parentElement.insertBefore(element, nthChild);
       });
     },
@@ -426,7 +464,7 @@
      * @method focus
      * @return {Collection} DOMinator collection
      */
-    focus: function() {
+    focus: function () {
       if (isEmpty(this)) return;
 
       this[0].focus();
@@ -439,7 +477,7 @@
      * @method show
      * @return {Collection} DOMinator collection
      */
-    show: function() {
+    show: function () {
       return this.style('display', 'block');
     },
 
@@ -449,7 +487,7 @@
      * @method hide
      * @return {Collection} DOMinator collection
      */
-    hide: function() {
+    hide: function () {
       return this.style('display', 'none');
     },
 
@@ -461,8 +499,8 @@
      * @param {String} value Style value
      * @return {Collection} DOMinator collection
      */
-    style: function(name, value) {
-      return this.forEach(function(element) {
+    style: function (name, value) {
+      return this.forEach(function (element) {
         element.style[name] = value;
       });
     },
@@ -473,13 +511,13 @@
      * @method toArray
      * @return {Array}
      */
-    toArray: function() {
+    toArray: function () {
       return [].slice.call(this, 0);
     }
   };
 
   function flatten(array) {
-    return [].reduce.call(array, function(prevValue, currValue) {
+    return [].reduce.call(array, function (prevValue, currValue) {
       return prevValue.concat([].slice.call(currValue, 0));
     }, []);
   }

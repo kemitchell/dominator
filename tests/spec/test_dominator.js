@@ -1,18 +1,23 @@
 describe('DOMinator', function() {
     var events;
+    var eventCounts;
     var eventType;
 
     var assert = chai.assert;
     var genericHandler = function(event) {
-        events[ (event && event.type) || eventType ] = true;
+      var eventName = (event && event.type) || eventType;
+      events[eventName] = true;
+
+      if (! (eventName in eventCounts)) {
+        eventCounts[eventName] = 0;
+      }
+      eventCounts[eventName]++;
     };
 
     beforeEach(function() {
         events = {};
+        eventCounts = {};
         jQuery('.DOMSelection').empty().append('<div>Part 1</div><div>Part 2</div><div>Part 3</div>');
-    });
-
-    afterEach(function() {
     });
 
     describe('constructor', function() {
@@ -131,25 +136,41 @@ describe('DOMinator', function() {
       });
     });
 
-    describe('bindEvent and fireEvent', function() {
+    describe('on and trigger', function() {
       beforeEach(function() {
         events.click = false;
         eventType = null;
 
-        DOMinator('.DOMSelection').bindEvent('click', genericHandler).fireEvent('click');
+        DOMinator('.DOMSelection').on('click', genericHandler).trigger('click');
       });
 
       it('binds a DOM event handler that is actually fired', function() {
         assert.isTrue(events.click);
+        DOMinator('.DOMSelection').off('click', genericHandler);
       });
     });
 
-    describe('unbindEvent', function() {
+    describe('once and trigger', function() {
+      beforeEach(function() {
+        events = {};
+        eventCounts = {};
+        eventType = null;
+
+        DOMinator('.DOMSelection').once('click', genericHandler).trigger('click').trigger('click');
+      });
+
+      it('only triggers the handler once', function() {
+        assert.equal(eventCounts.click, 1);
+        DOMinator('.DOMSelection').off('click', genericHandler);
+      });
+    });
+
+    describe('off', function() {
       beforeEach(function() {
         events.click = false;
         eventType = null;
 
-        DOMinator('.DOMSelection').unbindEvent('click', genericHandler).fireEvent('click');
+        DOMinator('.DOMSelection').on('click', genericHandler).off('click', genericHandler).trigger('click');
       });
 
       it('removes the DOM event handler', function() {
@@ -157,9 +178,9 @@ describe('DOMinator', function() {
       });
     });
 
-    describe('inner to set on a form field', function() {
+    describe('val to set on a form field', function() {
       beforeEach(function() {
-        DOMinator('#validationField').inner('test element value');
+        DOMinator('#validationField').val('test element value');
       });
 
       it('sets the value of the field', function() {
@@ -167,19 +188,46 @@ describe('DOMinator', function() {
       });
     });
 
-    describe('inner to get a form field', function() {
+    describe('val to get a form field', function() {
       beforeEach(function() {
-        DOMinator('#validationField').inner('test element value');
+        DOMinator('#validationField').val('test element value');
       });
 
       it('gets the value of the field', function() {
-        assert.equal('test element value', DOMinator('#validationField').inner());
+        assert.equal('test element value', DOMinator('#validationField').val());
       });
     });
 
-    describe('inner to set on a non-form field element', function() {
+    describe('val to set on a non-form field element', function() {
+      it('throws an error', function() {
+        var err;
+        try {
+          DOMinator('#testSetInnerNonInput').val('test element value');
+        } catch(e) {
+          err = e;
+        } finally {
+          assert.ok(err);
+          assert.notEqual('test element value', jQuery('#testSetInnerNonInput').html());
+        }
+      });
+    });
+
+    describe('val to get on a non-form field element', function() {
+      it('throws an error', function() {
+        var err;
+        try {
+          DOMinator('#testSetInnerNonInput').val();
+        } catch(e) {
+          err = e;
+        } finally {
+          assert.ok(err);
+        }
+      });
+    });
+
+    describe('html to set the html of an element', function() {
       beforeEach(function() {
-        DOMinator('#testSetInnerNonInput').inner('test element value');
+        DOMinator('#testSetInnerNonInput').html('test element value');
       });
 
       it('sets the HTML of the element', function() {
@@ -187,23 +235,23 @@ describe('DOMinator', function() {
       });
     });
 
-    describe('inner to get on a non-form field element', function() {
+    describe('html to get the html of an element', function() {
       beforeEach(function() {
-        DOMinator('#testSetInnerNonInput').inner('test element value');
+        DOMinator('#testSetInnerNonInput').html('test element value');
       });
 
       it('gets the HTML of the element', function() {
-        assert.equal('test element value', DOMinator('#testSetInnerNonInput').inner());
+        assert.equal('test element value', DOMinator('#testSetInnerNonInput').html());
       });
     });
 
     describe('empty', function() {
       beforeEach(function() {
-        DOMinator('#testSetInnerNonInput').inner('test element value').empty();
+        DOMinator('#testSetInnerNonInput').html('test element value').empty();
       });
 
       it('emptys an element of contents', function() {
-        assert.equal('', DOMinator('#testSetInnerNonInput').inner());
+        assert.equal('', DOMinator('#testSetInnerNonInput').html());
       });
     });
 

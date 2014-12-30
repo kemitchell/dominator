@@ -7,6 +7,7 @@ const path = require('path');
 const gulp = require('gulp');
 const replace = require('gulp-replace');
 const markdox = require('gulp-markdox');
+const watch = require('gulp-watch');
 
 const paths = {
   script: './src/dominator.js',
@@ -16,6 +17,11 @@ const paths = {
 };
 
 gulp.task('default', function () {
+  gulp.start('build');
+});
+
+
+gulp.task('build', function () {
   var body = fs.readFileSync(paths.script, 'utf8');
 
   gulp.src(paths.templates)
@@ -23,9 +29,14 @@ gulp.task('default', function () {
       .pipe(gulp.dest(paths.build));
 });
 
-
 gulp.task('docs', function () {
   gulp.src(paths.script)
     .pipe(markdox())
     .pipe(gulp.dest(paths.documentation_root));
+});
+
+gulp.task('watch', function () {
+  watch('./src/*.js', function () {
+    gulp.start('build');
+  });
 });
