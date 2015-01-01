@@ -2,7 +2,14 @@
   "name": "dominator",
   "version": "0.0.3",
   "description": "DOMinator is a jQuery-like DOM micro library.",
-  "main": "build/umd.js",
+  "main": "build/dominator.js",
+  "scripts": {
+    "start": "grunt",
+    "test": "grunt test",
+    "setup": "npm install && npm run-script setup-bower",
+    "setup-bower": "cd tests && bower install && cd ..",
+    "contributors": "git shortlog -s | cut -c8- | sort -f > CONTRIBUTORS.md"
+  },
   "directories": {
     "test": "tests"
   },
@@ -22,9 +29,22 @@
   },
   "homepage": "https://github.com/shane-tomlinson/dominator",
   "devDependencies": {
-    "gulp": "3.8.10",
-    "gulp-replace": "0.2.0",
-    "gulp-markdox": "0.1.0",
-    "gulp-watch": "3.0.0"
+    "bower": "1.3.12",
+    "grunt": "0.4.5",
+    "grunt-build-control": "git://github.com/robwierzbowski/grunt-build-control#274952",
+    "grunt-bump": "0.0.16",
+    "grunt-bytesize": "0.1.1",
+    "grunt-cli": "0.1.13",
+    "grunt-contrib-clean": "0.6.0",
+    "grunt-contrib-copy": "0.7.0",
+    "grunt-contrib-jshint": "0.10.0",
+    "grunt-contrib-uglify": "0.7.0",
+    "grunt-contrib-watch": "0.6.1",
+    "grunt-conventional-changelog": "1.1.0",
+    "grunt-copyright": "0.1.0",
+    "grunt-jscs": "1.1.0",
+    "grunt-markdox": "1.2.1",
+    "grunt-mocha": "0.4.11",
+    "load-grunt-tasks": "2.0.0"
   }
 }

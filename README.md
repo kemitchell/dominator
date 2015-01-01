@@ -5,15 +5,12 @@ DOMinator is a jQuery-like DOM micro library. DOMinator is not meant to be fully
 ## Usage
 
 DOMinator is requires document.querySelectorAll, its primary purpose is
-within a browwser. Choose one of the three pre-built packages in the `build` directory:
-
-* amd.js - For use with AMD loaders like requirejs.
-* umd.js - For use with UMD loaders like browserify.
-* standalone.js - A standalone package, DOMinator is available under the window.DOMinator namespace.
-
+within a browwser. The pre-built package in the `build` directory works
+as a standalone module under window.DOMinator, and can also be used with
+UMD or AMD module loaders.
 
 ## Documentation:
-See the [API docs](https://github.com/shane-tomlinson/dominator/blob/master/docs/dominator.md).
+See the [API docs](https://github.com/shane-tomlinson/dominator/blob/master/docs/api.md).
 
 ## Author:
 * Shane Tomlinson
