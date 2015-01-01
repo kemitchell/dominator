@@ -7,6 +7,12 @@
  * @author Shane Tomlinson shane@shanetomlinson.com
  * @version 0.0.3
  */
+//
+// jscs: disable
+// jshint ignore:start
+;(function(define){define(function(require,exports,module){
+// jshint ignore:end
+// jscs: enable
 
   'use strict';
 
@@ -103,7 +109,7 @@
      * Check if the first element of the set matches the selector.
      *
      * @method is
-     * @param {String} selector Selector to match
+     * @param {String} type Selector to match
      * @return {Boolean} true if element matches the selector, false otw.
      */
     is: function (type) {
@@ -238,7 +244,7 @@
         var target = this[0];
         if (! target) return;
 
-        if(! isValBased(target)) {
+        if (! isValBased(target)) {
           throw new Error('cannot get the value of a non-value based element');
         }
 
@@ -246,7 +252,7 @@
       }
 
       return this.forEach(function (element) {
-        if(! isValBased(element)) {
+        if (! isValBased(element)) {
           throw new Error('cannot set the value of a non-value based element');
         }
 
@@ -356,8 +362,8 @@
      * @param {Object} context Context to use when calling `iterator`
      * @return {Collection} DOMinator collection
      */
-    forEach: function (callback, context) {
-      [].forEach.call(this, callback, context);
+    forEach: function (iterator, context) {
+      [].forEach.call(this, iterator, context);
       return this;
     },
 
@@ -369,8 +375,8 @@
      * @param {Object} context Context to use when calling `iterator`
      * @return {Array} map results
      */
-    map: function (callback, context) {
-      return [].map.call(this, callback, context);
+    map: function (iterator, context) {
+      return [].map.call(this, iterator, context);
     },
 
     /**
@@ -531,7 +537,7 @@
 
     if (isString(selector)) {
       selector = selector.trim();
-      if (selector[0] === "<") {
+      if (selector[0] === '<') {
         // HTML was specified! Create the elements
         var element = document.createElement('div');
         element.innerHTML = selector;
@@ -564,6 +570,14 @@
     return dom;
   }
 
-  return toDOMinator;
+  module.exports = toDOMinator;
+// jscs: disable
+// jshint ignore:start
+});})(typeof define=='function'&&define.amd?define
+:(function(n,w){'use strict';return typeof module=='object'?function(c){
+c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
+return w[n];},m.exports,m);w[n]=m.exports;};})('DOMinator',this));
+// jshint ignore:end
+// jscs: enable
 
 
