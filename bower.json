@@ -6,7 +6,7 @@
     "Shane Tomlinson <shane@shanetomlinson.com>"
   ],
   "description": "DOMinator is a jQuery-like DOM micro library.",
-  "main": ["dominator.js"],
+  "main": "dominator.js",
   "moduleType": [
     "amd",
     "globals",
