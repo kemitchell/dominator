@@ -1,6 +1,6 @@
 {
   "name": "dominator",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "DOMinator is a jQuery-like DOM micro library.",
   "main": "build/dominator.js",
   "scripts": {
