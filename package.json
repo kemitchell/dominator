@@ -23,7 +23,7 @@
     "microlibrary"
   ],
   "author": "Shane Tomlinson <shane@shanetomlinson.com>",
-  "license": "MPL 2.0",
+  "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/shane-tomlinson/dominator/issues"
   },
